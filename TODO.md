@@ -6,7 +6,7 @@
 - [x] Vérifier et corriger zutty (remplacé par Xfce-terminal)
 - [x] Ajouter un installeur sur le bureau du live
 - [x] Vérifier et corriger la connexion wifi
-- [ ] Rendre le fond d'écran scalable (remplacer une seule image qui s'étire ou rétrécit)
+- [x] Rendre le fond d'écran scalable (master 16 Mpx + mode « zoomed » toujours forcé : net et sans déformation sur tous les écrans)
 - [ ] Dans une même logique, fournir toutes les résolutions du splash
 - [x] Remplacer l'apparence standard du GRUB Debian
 - [x] Vérifier et corriger au besoin le fonctionnement du son / vidéo / capture
