@@ -1,6 +1,6 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# Construit l'image ISO debian-minimal-kids.
+# Construit l'image ISO Kiddux (kiddux-amd64.hybrid.iso).
 #
 # « lb build » télécharge les paquets Debian et assemble le système ;
 # cela nécessite les droits root et une connexion internet.

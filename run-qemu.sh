@@ -33,7 +33,7 @@
 # =============================================================================
 set -e
 
-ISO="debian-minimal-kids-amd64.hybrid.iso"
+ISO="kiddux-amd64.hybrid.iso"
 DISK="kids-test.qcow2"
 INSTALL=0
 INSTALLED=0

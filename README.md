@@ -61,11 +61,11 @@ exit
 ```
 
 L'ISO produite appartient à root (build rootful) : au besoin,
-`sudo chown $USER debian-minimal-kids-amd64.hybrid.iso`. Puis, de retour sur
+`sudo chown $USER kiddux-amd64.hybrid.iso`. Puis, de retour sur
 l'hôte, tester avec QEMU (`./run-qemu.sh --uefi`). Ne lance pas `./clean.sh`
 entre le build et le test : `lb clean` supprime les artefacts, **ISO comprise**.
 
-Résultat : `debian-minimal-kids-amd64.hybrid.iso`. Au démarrage du live, XFCE
+Résultat : `kiddux-amd64.hybrid.iso`. Au démarrage du live, XFCE
 en session automatique (`lisa` sur `kids-pc`), en français.
 
 ## Tester dans QEMU
@@ -102,7 +102,7 @@ sudo dnf install qemu-system-x86 edk2-ovmf    # Fedora
 Commande équivalente, sur une seule ligne :
 
 ```bash
-qemu-system-x86_64 -enable-kvm -m 2048 -smp 2 -cdrom debian-minimal-kids-amd64.hybrid.iso -boot d -audiodev pipewire,id=snd0 -device ich9-intel-hda -device hda-duplex,audiodev=snd0
+qemu-system-x86_64 -enable-kvm -m 2048 -smp 2 -cdrom kiddux-amd64.hybrid.iso -boot d -audiodev pipewire,id=snd0 -device ich9-intel-hda -device hda-duplex,audiodev=snd0
 ```
 
 ### Le son dans QEMU (openSUSE : paquet à installer)

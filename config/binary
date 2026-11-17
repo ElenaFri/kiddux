@@ -71,16 +71,16 @@ LB_HDD_SIZE="auto"
 LB_HDD_PARTITION_START=""
 
 # Set iso author
-LB_ISO_APPLICATION="Debian Minimal Kids"
+LB_ISO_APPLICATION="Kiddux"
 
 # Set iso preparer
 LB_ISO_PREPARER="live-build @LB_VERSION@; https://salsa.debian.org/live-team/live-build"
 
 # Set iso publisher
-LB_ISO_PUBLISHER="debian-minimal-kids project"
+LB_ISO_PUBLISHER="Kiddux project"
 
 # Set iso volume (max 32 chars)
-LB_ISO_VOLUME="debian-minimal-kids"
+LB_ISO_VOLUME="Kiddux"
 
 # Set jffs2 eraseblock size
 LB_JFFS2_ERASEBLOCK=""
