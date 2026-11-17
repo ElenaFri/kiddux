@@ -16,6 +16,11 @@
 # 3 secondes : assez court pour un démarrage fluide, assez long pour qu'un
 # adulte puisse choisir une autre entrée (n'importe quelle touche fige le
 # compte à rebours).
+#
+# C'est aussi ce timeout qui alimente la barre de compte à rebours
+# (progress_bar id=__timeout__) du thème GRUB « kids »
+# (config/bootloaders/grub-pc/live-theme/theme.txt) : sans timeout, pas de
+# décompte affiché.
 # =============================================================================
 
 set -e

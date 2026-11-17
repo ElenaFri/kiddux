@@ -1,0 +1,48 @@
+#!/bin/sh
+# add-calamares-desktop-icon — pose l'icône « Installer Kiddux » sur le bureau
+# de la session live (lancé à l'ouverture de session par
+# /etc/xdg/autostart/calamares-desktop-icon.desktop, fourni par
+# calamares-settings-debian).
+#
+# Remplace le script du même nom de calamares-settings-debian, qui copie bien le
+# lanceur dans « $(xdg-user-dir DESKTOP) » (~/Bureau en français) mais le déclare
+# ensuite « de confiance » avec un chemin codé en dur (~/Desktop/...). Ce fichier
+# n'existant pas, le marquage échoue et XFCE affiche, au clic, l'alerte
+# « lanceur d'application dans un emplacement non sécurisé ».
+# Ici, on utilise partout le même chemin, déterminé une seule fois.
+
+LAUNCHER=calamares-install-debian.desktop
+
+# Sans ~/.config/user-dirs.dirs, xdg-user-dir répond « ~/Desktop » (nom anglais)
+# au lieu de « ~/Bureau » : on laisse d'abord xdg-user-dirs créer les dossiers
+# dans la langue de la session (sans effet s'il l'a déjà fait).
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" ] || xdg-user-dirs-update
+
+DESKTOP="$(xdg-user-dir DESKTOP)"
+TARGET="$DESKTOP/$LAUNCHER"
+
+# Au cas où ce script passerait avant la création des dossiers XDG.
+mkdir -p "$DESKTOP"
+
+cp "/usr/share/applications/$LAUNCHER" "$TARGET"
+
+# XFCE refuse de lancer un .desktop non exécutable...
+chmod +x "$TARGET"
+
+# ... et exige en plus qu'il soit déclaré de confiance : métadonnée GIO
+# « trusted » + somme SHA-256 du fichier (vérifiée par Thunar/xfdesktop).
+# Cette somme doit être calculée en dernier, une fois le fichier définitif.
+gio set --type=string "$TARGET" metadata::trusted true
+gio set --type=string "$TARGET" metadata::xfce-exe-checksum \
+    "$(sha256sum "$TARGET" | cut -f1 -d' ')"
+# Force xfdesktop à relire l'icône avec ses nouvelles métadonnées.
+touch "$TARGET"
+
+# Précharge Calamares et ses bibliothèques pendant les cycles disque
+# inutilisés, pour qu'il démarre plus vite au premier clic.
+ionice -c 3 cat /usr/bin/calamares > /dev/null 2>&1
+for file in $(ldd /usr/bin/calamares 2>/dev/null | awk '$3 ~ /^\// {print $3}'); do
+    ionice -c 3 cat "$file" > /dev/null 2>&1
+done
+
+exit 0

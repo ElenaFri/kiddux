@@ -1,0 +1,78 @@
+# theme.txt — thème graphique GRUB de Kiddux, pour le SYSTÈME INSTALLÉ
+# =============================================================================
+# Copie de config/bootloaders/grub-pc/live-theme/theme.txt (menu du live), à
+# l'unique différence du chemin de l'image : ici le splash est dans le même
+# dossier que ce fichier. Garder les deux fichiers synchronisés.
+#
+# Activation : /etc/default/grub (GRUB_THEME + GRUB_TERMINAL_OUTPUT=gfxterm).
+# « update-grub » (lancé par Calamares) écrit alors « insmod gfxmenu / png » et
+# « set theme=... » dans /boot/grub/grub.cfg. Le dossier doit être lisible par
+# GRUB : c'est le cas quand /boot est sur la même partition que /usr (défaut de
+# Calamares). La police « Unifont Regular 16 » vient de unicode.pf2, que
+# 00_header charge de lui-même.
+# =============================================================================
+
+# -- Fond -------------------------------------------------------------------
+# Image de marque (logo du projet + mot-symbole « debian 13 ») centrée sur un
+# aplat aubergine. « padding » : l'image n'est jamais déformée, reste entière et
+# centrée, les marges étant comblées par desktop-color — rendu propre à toute
+# résolution (l'image est transparente hors de la marque, d'où l'aubergine
+# uniforme). desktop-image est relatif à ce fichier.
+desktop-image: "splash.png"
+desktop-image-scale-method: "padding"
+desktop-color: "#2d1535"
+
+# Pas de titre texte (la marque est déjà dans l'image).
+title-text: ""
+message-color: "#f2e8d6"
+message-bg-color: "#2d1535"
+terminal-font: "Unifont Regular 16"
+
+# -- Aide de navigation (discrète, en bas) ----------------------------------
+# @KEYMAP_SHORT@ est remplacé par GRUB au démarrage par un rappel des touches.
++ label {
+    top   = 100%-52
+    left  = 0
+    width = 100%
+    height = 20
+    text  = "@KEYMAP_SHORT@"
+    align = "center"
+    color = "#b99fc4"
+    font  = "Unifont Regular 16"
+}
+
+# -- Menu des entrées (moitié basse de l'écran) -----------------------------
+# Sélection signalée par le contraste : blanc vif / lavande. Pas d'icônes.
++ boot_menu {
+    left   = 18%
+    width  = 64%
+    top    = 57%
+    height = 30%
+    item_color          = "#d9b3e0"
+    item_font           = "Unifont Regular 16"
+    selected_item_color = "#ffffff"
+    selected_item_font  = "Unifont Regular 16"
+    item_height  = 24
+    item_padding = 4
+    item_spacing = 6
+    icon_width   = 0
+    icon_height  = 0
+    item_icon_space = 0
+}
+
+# -- Compte à rebours du démarrage automatique ------------------------------
+# id = __timeout__ : GRUB y affiche le décompte (texte @TIMEOUT_NOTIFICATION_
+# LONG@ traduit). La barre se vide en magenta sur fond aubergine.
++ progress_bar {
+    id    = "__timeout__"
+    left  = 20%
+    top   = 100%-82
+    width = 60%
+    height = 18
+    font  = "Unifont Regular 16"
+    text_color   = "#ffffff"
+    fg_color     = "#e07be8"
+    bg_color     = "#3a1d42"
+    border_color = "#a82e73"
+    text = "@TIMEOUT_NOTIFICATION_LONG@"
+}

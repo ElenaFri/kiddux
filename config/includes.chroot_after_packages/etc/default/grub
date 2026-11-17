@@ -6,6 +6,23 @@
 # valeurs, ajoute automatiquement « splash » (Plymouth présent) et règle
 # GRUB_DISTRIBUTOR sur « Kiddux » (bootloaderEntryName du branding).
 #
+# Menu d'amorçage aux couleurs de Kiddux : sans GRUB_THEME, grub-mkconfig retombe
+# sur le menu Debian standard (cyan sur bleu). /etc/grub.d/00_header n'applique le
+# thème que si la sortie est graphique (GRUB_TERMINAL_OUTPUT=gfxterm) et que le
+# fichier est lisible par GRUB (même partition que /boot). Dans le cas contraire
+# il se rabat sur le menu texte : le système démarre quand même.
+#
+# GRUB_BACKGROUND : fond du TERMINAL graphique (distinct du thème du menu). Au
+# chargement du noyau, GRUB abandonne un instant le menu gfxmenu pour le terminal ;
+# sans ce réglage, /etc/grub.d/05_debian_theme y grave le fond bleu de desktop-base,
+# qui clignote alors par-dessus le démarrage. On pointe donc un aplat aubergine,
+# accordé au thème et à Plymouth, pour une transition sans rupture.
+#
+# Pas de GRUB_GFXPAYLOAD_LINUX=keep : ce réglage ferait hériter au noyau le
+# framebuffer efifb (non accéléré) de GRUB, d'où un démarrage lent et un
+# changement de résolution tardif. Le KMS précoce (etc/initramfs-tools/modules)
+# s'en charge mieux : le vrai pilote d'affichage prend la main dès l'initramfs.
+#
 # Sans effet sur le LIVE : l'ISO a son propre menu GRUB (étape binaire), et
 # aucun paquet grub ici ne déclenche update-grub pendant la construction.
 
@@ -14,3 +31,8 @@ GRUB_TIMEOUT=1
 GRUB_DISTRIBUTOR="Kiddux"
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 GRUB_CMDLINE_LINUX=""
+
+GRUB_TERMINAL_OUTPUT=gfxterm
+GRUB_GFXMODE=auto
+GRUB_THEME=/usr/share/grub/themes/kiddux/theme.txt
+GRUB_BACKGROUND=/usr/share/grub/themes/kiddux/background.png

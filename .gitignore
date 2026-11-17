@@ -50,6 +50,10 @@ binary/
 # VM test disks
 *.qcow2
 
+# Variables NVRAM OVMF inscriptibles (créées par run-qemu.sh --uefi)
+kids-ovmf-vars.fd
+kids-test-ovmf-vars.fd
+
 # Artefacts de release (attachés à la release GitHub, jamais au dépôt)
 SHA256SUMS.txt
 RELEASE_NOTES.md

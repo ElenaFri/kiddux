@@ -6,6 +6,10 @@
 # includes.chroot_after_packages, copiés AVANT ce hook. Il ne reste qu'à
 # régénérer l'initramfs pour qu'il contienne le thème (le splash s'affiche
 # au tout début du démarrage, donc depuis l'initramfs).
+#
+# update-initramfs lit aussi /etc/initramfs-tools/modules : il embarque donc du
+# même coup les pilotes d'affichage du KMS précoce (voir ce fichier), pour un
+# démarrage net et sans changement de résolution tardif.
 
 set -e
 

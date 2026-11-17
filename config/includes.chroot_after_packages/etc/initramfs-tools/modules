@@ -1,0 +1,30 @@
+# List of modules that you want to include in your initramfs.
+# They will be loaded at boot time in the order below.
+#
+# Syntax:  module_name [args ...]
+#
+# You must run update-initramfs(8) to effect this change.
+
+# -- KMS précoce (démarrage sans clignotement) --------------------------------
+# Charge le pilote d'affichage (DRM/KMS) dès l'initramfs, au lieu d'attendre la
+# fin du démarrage. Sinon le noyau utilise d'abord le framebuffer du firmware
+# (efifb, non accéléré) hérité de GRUB, puis bascule tardivement sur le vrai
+# pilote : ce basculement change la résolution en cours de route (deux écrans de
+# tailles différentes se superposent un instant) et Plymouth rame sur efifb.
+# En chargeant le pilote tout de suite, Plymouth démarre directement à la bonne
+# résolution, accéléré, et l'enchaînement GRUB → Plymouth est net.
+#
+# On liste les pilotes des machines virtuelles ET du matériel réel : seul celui
+# qui correspond au GPU présent se charge, les autres sont ignorés sans effet.
+
+# Machines virtuelles (QEMU/KVM, VirtualBox, VMware)
+bochs
+virtio-gpu
+qxl
+vmwgfx
+
+# Matériel réel
+i915
+amdgpu
+radeon
+nouveau
