@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# =============================================================================
+# 0560-grub-quiet-boot — supprime le flash « Loading Linux … » du GRUB installé.
+#
+# Au chargement du noyau, /etc/grub.d/10_linux fait écrire dans grub.cfg des
+# lignes « echo 'Loading Linux …' » / « echo 'Loading initial ramdisk …' ».
+# Pour les afficher, GRUB quitte un instant le menu graphique thématisé et
+# bascule sur le terminal nu : l'écran standard de Debian (texte blanc sur fond
+# noir) se superpose alors brièvement au thème « kids », juste avant que
+# Plymouth prenne la main.
+#
+# Ces messages ne sont émis que si la variable interne « quiet_boot » vaut 0
+# (sa valeur par défaut, codée en dur dans 10_linux) — aucun réglage de
+# /etc/default/grub ne la pilote. On la passe donc à 1, comme le fait Ubuntu.
+#
+# Effet sur le SYSTÈME INSTALLÉ : Calamares lance « update-grub » dans la cible,
+# qui réutilise ce 10_linux ; le grub.cfg produit n'a plus les « echo », d'où un
+# enchaînement GRUB → Plymouth sans rupture visuelle. Sans effet sur le live
+# (l'ISO a son propre menu, étape binaire).
+
+set -e
+
+GRUB_10="/etc/grub.d/10_linux"
+
+# Rien à faire si le script n'est pas là (grub absent) ou déjà corrigé.
+[ -f "$GRUB_10" ] || exit 0
+grep -q '^quiet_boot="0"' "$GRUB_10" || exit 0
+
+sed -i 's/^quiet_boot="0"/quiet_boot="1"/' "$GRUB_10"
