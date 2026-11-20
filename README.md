@@ -171,17 +171,16 @@ installé.
   (aplat aubergine `background.png`) remplace le fond de terminal bleu que
   `05_debian_theme` hérite de desktop-base, visible lui aussi un instant au
   chargement du noyau.
-- Démarrage sans clignotement : `etc/initramfs-tools/modules` charge le pilote
-  d'affichage (DRM/KMS) dès l'initramfs — `bochs`/`virtio-gpu`/`qxl`/`vmwgfx`
-  pour les VM, `i915`/`amdgpu`/`radeon`/`nouveau` pour le matériel réel (seul
-  celui du GPU présent se charge). Sinon le noyau garde le framebuffer efifb de
-  GRUB puis bascule tardivement sur le vrai pilote : la résolution change en
-  route (deux écrans de tailles différentes se superposent) et Plymouth rame.
-  C'est pourquoi `etc/default/grub` (système installé) n'utilise **pas**
-  `GRUB_GFXPAYLOAD_LINUX=keep`. Côté **live**, le hook binaire
-  `0525-grub-live-video` applique la même correction au `config.cfg` généré par
-  live-build, qui forçait `gfxmode=800x600` + `gfxpayload=keep` : il le ramène à
-  `gfxmode=auto` sans `keep`.
+- Démarrage sans clignotement ni écran noir : `GRUB_GFXPAYLOAD_LINUX=keep`
+  (installé) et `gfxpayload=keep` conservé dans le `config.cfg` du live — ce
+  réglage transmet le framebuffer graphique de GRUB au noyau ; sans lui, GRUB
+  repasse le firmware en mode TEXTE au chargement du noyau : rectangle noir
+  couvrant le milieu de l'écran juste après le compte à rebours du menu.
+  `etc/initramfs-tools/modules` charge en outre le pilote d'affichage
+  (DRM/KMS) dès l'initramfs — `bochs`/`virtio-gpu`/`qxl`/`vmwgfx` pour les VM,
+  `i915`/`amdgpu`/`radeon`/`nouveau` pour le matériel réel (seul celui du GPU
+  présent se charge) : le vrai pilote prend la main directement sur ce
+  framebuffer, l'enchaînement GRUB → Plymouth est sans rupture.
 - Icône « Installer Kiddux » : posée dans `~/Bureau` par
   `usr/bin/add-calamares-desktop-icon`, qui **remplace** le script de
   `calamares-settings-debian`. L'original déclarait le lanceur « de confiance »
@@ -262,7 +261,7 @@ d'abord.
 | `config/includes.chroot_after_packages/usr/share/grub/themes/kiddux/` | Thème GRUB du système installé (le live utilise `config/bootloaders/`) |
 | `config/hooks/normal/0560-grub-quiet-boot.hook.chroot` | Supprime le flash « Loading Linux… » du GRUB installé |
 | `config/includes.chroot_after_packages/etc/initramfs-tools/modules` | KMS précoce : démarrage net, sans changement de résolution |
-| `config/hooks/normal/0525-grub-live-video.binary` | GRUB du live en `gfxmode=auto` sans `keep` (démarrage net) |
+| `config/hooks/normal/0525-grub-live-video.binary` | GRUB du live : gfxmode haute résolution, `keep` conservé, efi_gop seul |
 | `build.sh` / `clean.sh` / `run-qemu.sh` | Scripts pratiques (build, nettoyage, test QEMU avec son) |
 
 ## Réglages par défaut

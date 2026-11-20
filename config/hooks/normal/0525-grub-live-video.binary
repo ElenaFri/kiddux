@@ -1,25 +1,30 @@
 #!/bin/sh
 
 # =============================================================================
-# debian-minimal-kids — mode vidéo du GRUB live (amorçage UEFI) de l'ISO.
+# debian-minimal-kids — réglages vidéo du GRUB live (amorçage UEFI) de l'ISO.
 #
 # S'exécute DANS binary/ pendant l'étape binaire du build (fichiers *.binary),
 # APRÈS la génération de boot/grub/config.cfg par live-build.
 #
-# Bug corrigé : le config.cfg de live-build (repris de l'image netinst) force
+# Le config.cfg de live-build (repris de l'image netinst) force :
 #   set gfxmode=800x600
 #   set gfxpayload=keep
 #   insmod video_bochs / insmod video_cirrus
-# GRUB préfère alors le pilote vidéo natif (bochs/cirrus), qui affiche son menu en
-# 800x600 au lieu de garder la résolution du firmware (efi_gop). Sur un écran plus
-# grand, ce 800x600 est étiré — texte « gonflé — et le framebuffer efifb est
-# transmis au noyau, d'où une bascule de résolution tardive.
 #
-# On aligne donc le live sur le système installé : gfxmode=auto, pas de keep, et
-# on retire video_bochs/video_cirrus pour que GRUB s'en tienne à efi_gop — la
-# résolution du firmware, identique à celle du noyau (KMS précoce,
-# etc/initramfs-tools/modules). Résultat : menu GRUB à la bonne résolution, net,
-# sans bascule. (BIOS passe par isolinux, pas par ce fichier.)
+# Trois corrections :
+#   1. gfxmode : remplacé par une liste haute résolution (la plus grande
+#      d'abord). GRUB prend la première que le firmware (efi_gop) propose —
+#      1920x1200 sur un vrai PC, 1280x800 en QEMU — au lieu de 800x600, trop
+#      petit (texte étiré/« gonflé » sur grand écran).
+#   2. gfxpayload=keep : CONSERVÉ (ne pas y toucher !). C'est lui qui transmet
+#      le framebuffer graphique de GRUB au noyau. Sans lui, GRUB repasse le
+#      firmware en mode TEXTE au chargement du noyau : écran/console noir(e) —
+#      sur vrai matériel, un rectangle noir couvrant le milieu de l'écran,
+#      juste après le compte à rebours du menu. (Supprimé par erreur
+#      précédemment ; le KMS précoce, etc/initramfs-tools/modules, assure la
+#      suite sans à-coup.)
+#   3. video_bochs / video_cirrus retirés : GRUB s'en tient à efi_gop et garde
+#      la résolution native du firmware.
 # =============================================================================
 
 set -e
@@ -27,19 +32,13 @@ set -e
 CFG="boot/grub/config.cfg"
 [ -e "$CFG" ] || exit 0
 
-# gfxmode : liste de résolutions, la plus grande d'abord. GRUB prend la première
-# que le firmware (efi_gop) propose — 1920x1200 sur un vrai PC, 1280x800 en QEMU.
-# « auto » seul choisissait 800x600 (trop petit), d'où un texte étiré/« gonflé »
-# sur grand écran et un changement de résolution GRUB→noyau. On remplace donc la
-# valeur gfxmode des deux branches (800x600 ET auto) par cette liste.
+# 1. Liste de résolutions, la plus grande d'abord (les deux branches).
 sed -i 's/^\([[:space:]]*\)set gfxmode=.*/\1set gfxmode=1920x1200,1920x1080,1600x1200,1280x1024,1280x800,1024x768,auto/' "$CFG"
 
-# Supprime le forçage du framebuffer de GRUB vers le noyau.
-sed -i '/^[[:space:]]*set gfxpayload=keep/d' "$CFG"
+# 2. « set gfxpayload=keep » : conservé tel quel (voir en-tête).
 
-# Retire les pilotes vidéo natifs : GRUB garde ainsi la résolution du firmware
-# (efi_gop) au lieu de tomber en 800x600.
+# 3. Pilotes vidéo natifs retirés (GRUB garde la résolution du firmware).
 sed -i '/^[[:space:]]*insmod video_bochs/d' "$CFG"
 sed -i '/^[[:space:]]*insmod video_cirrus/d' "$CFG"
 
-echo "GRUB live : gfxmode=auto, sans keep ni video_bochs/cirrus (menu net, bonne résolution)."
+echo "GRUB live : gfxmode haute résolution, gfxpayload=keep conservé (pas de flash noir), efi_gop seul."
