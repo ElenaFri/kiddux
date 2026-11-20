@@ -13,13 +13,13 @@
 # =============================================================================
 
 # -- Fond -------------------------------------------------------------------
-# Image de marque (logo du projet + mot-symbole « debian 13 ») centrée sur un
-# aplat aubergine. « padding » : l'image n'est jamais déformée, reste entière et
-# centrée, les marges étant comblées par desktop-color — rendu propre à toute
-# résolution (l'image est transparente hors de la marque, d'où l'aubergine
-# uniforme). desktop-image est relatif à ce fichier.
+# Image de marque (logo + « debian 13 ») sur un aplat aubergine 16:10 opaque.
+# "crop" : l'image remplit tout l'écran (proportions conservées, débords rognés).
+# On évite "padding", dont GRUB laisse les marges en NOIR (desktop-color ignoré
+# là), d'où des bandes noires sur écran large. Les larges marges aubergine du
+# splash font que le rognage ne touche jamais le logo ni le texte.
 desktop-image: "splash.png"
-desktop-image-scale-method: "padding"
+desktop-image-scale-method: "crop"
 desktop-color: "#2d1535"
 
 # Pas de titre texte (la marque est déjà dans l'image).

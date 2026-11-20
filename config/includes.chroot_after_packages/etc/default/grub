@@ -33,6 +33,9 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 GRUB_CMDLINE_LINUX=""
 
 GRUB_TERMINAL_OUTPUT=gfxterm
-GRUB_GFXMODE=auto
+# Liste de résolutions (la plus grande d'abord) : GRUB prend la première que le
+# firmware propose, au lieu de « auto » qui retombe parfois en 800x600 (texte
+# étiré sur grand écran). La dernière valeur, auto, reste un filet de sécurité.
+GRUB_GFXMODE=1920x1200,1920x1080,1600x1200,1280x1024,1280x800,1024x768,auto
 GRUB_THEME=/usr/share/grub/themes/kiddux/theme.txt
 GRUB_BACKGROUND=/usr/share/grub/themes/kiddux/background.png

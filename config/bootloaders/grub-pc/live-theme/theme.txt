@@ -21,7 +21,12 @@
 # uniforme). desktop-image est relatif à ce fichier : ../splash.png =
 # /boot/grub/splash.png.
 desktop-image: "../splash.png"
-desktop-image-scale-method: "padding"
+# "crop" : l'image remplit tout l'écran (mise à l'échelle en conservant les
+# proportions, débords rognés). On évite "padding", dont GRUB laisse les marges
+# en NOIR (il ignore desktop-color là), d'où des bandes noires sur écran large.
+# Le splash est en 16:10 (1920x1200) avec de larges marges aubergine, donc le
+# rognage ne touche jamais le logo ni le texte.
+desktop-image-scale-method: "crop"
 desktop-color: "#2d1535"
 
 # Pas de titre texte (la marque est déjà dans l'image).

@@ -9,16 +9,17 @@
 # Bug corrigé : le config.cfg de live-build (repris de l'image netinst) force
 #   set gfxmode=800x600
 #   set gfxpayload=keep
-# GRUB affiche donc son menu en 800x600 PUIS transmet ce petit framebuffer efifb
-# (non accéléré) au noyau. Le vrai pilote d'affichage (KMS) bascule ensuite vers
-# la résolution native : ce changement tardif fait se superposer un instant deux
-# écrans de tailles différentes, et le démarrage rame sur efifb.
+#   insmod video_bochs / insmod video_cirrus
+# GRUB préfère alors le pilote vidéo natif (bochs/cirrus), qui affiche son menu en
+# 800x600 au lieu de garder la résolution du firmware (efi_gop). Sur un écran plus
+# grand, ce 800x600 est étiré — texte « gonflé — et le framebuffer efifb est
+# transmis au noyau, d'où une bascule de résolution tardive.
 #
-# On aligne le live sur le système installé (etc/default/grub : GRUB_GFXMODE=auto,
-# pas de keep) : « auto » prend la résolution native — identique à celle que le
-# KMS précoce (etc/initramfs-tools/modules) choisit — donc plus de bascule, et
-# Plymouth démarre net. Le thème du menu GRUB n'est pas affecté (il dépend de
-# gfxterm, pas de gfxpayload).
+# On aligne donc le live sur le système installé : gfxmode=auto, pas de keep, et
+# on retire video_bochs/video_cirrus pour que GRUB s'en tienne à efi_gop — la
+# résolution du firmware, identique à celle du noyau (KMS précoce,
+# etc/initramfs-tools/modules). Résultat : menu GRUB à la bonne résolution, net,
+# sans bascule. (BIOS passe par isolinux, pas par ce fichier.)
 # =============================================================================
 
 set -e
@@ -26,10 +27,19 @@ set -e
 CFG="boot/grub/config.cfg"
 [ -e "$CFG" ] || exit 0
 
-# 800x600 → auto (résolution native, accordée au KMS et à Plymouth).
-sed -i 's/^\([[:space:]]*\)set gfxmode=800x600/\1set gfxmode=auto/' "$CFG"
+# gfxmode : liste de résolutions, la plus grande d'abord. GRUB prend la première
+# que le firmware (efi_gop) propose — 1920x1200 sur un vrai PC, 1280x800 en QEMU.
+# « auto » seul choisissait 800x600 (trop petit), d'où un texte étiré/« gonflé »
+# sur grand écran et un changement de résolution GRUB→noyau. On remplace donc la
+# valeur gfxmode des deux branches (800x600 ET auto) par cette liste.
+sed -i 's/^\([[:space:]]*\)set gfxmode=.*/\1set gfxmode=1920x1200,1920x1080,1600x1200,1280x1024,1280x800,1024x768,auto/' "$CFG"
 
 # Supprime le forçage du framebuffer de GRUB vers le noyau.
 sed -i '/^[[:space:]]*set gfxpayload=keep/d' "$CFG"
 
-echo "GRUB live : gfxmode=auto, gfxpayload=keep retiré (démarrage sans clignotement)."
+# Retire les pilotes vidéo natifs : GRUB garde ainsi la résolution du firmware
+# (efi_gop) au lieu de tomber en 800x600.
+sed -i '/^[[:space:]]*insmod video_bochs/d' "$CFG"
+sed -i '/^[[:space:]]*insmod video_cirrus/d' "$CFG"
+
+echo "GRUB live : gfxmode=auto, sans keep ni video_bochs/cirrus (menu net, bonne résolution)."

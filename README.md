@@ -5,9 +5,6 @@ enfants : simplicité, autonomie et initiation à l'informatique.
 
 Télécharger [ici](https://github.com/ElenaFri/debian-minimal-kids/releases/latest)
 (ISO ~1,46 Gio, vérifiable avec `SHA256SUMS.txt`)
-Il est à noter que la chrysalide est encore en pleine transformation vers le papillon, même si les mécanismes de base ont été implémentés.
-
-Plus d'informations sur ce qui est à venir dans ma [« TODO list »](TODO.md). Vos retours sont précieux !
 
 ![Menu d'amorçage GRUB (UEFI)](screenshots/default_grub_menu.png)
 
@@ -39,8 +36,8 @@ Fedora, Arch...).
 
 ```bash
 sudo apt install live-build debootstrap
-./clean.sh          # (optionnel) repartir de zéro ; À LANCER AVANT le build
-./build.sh          # lb build (root)
+./clean.sh          # (optionnel) repartir de zéro ; à lancer AVANT le build
+./build.sh          
 ./run-qemu.sh --uefi # tester (voir « Tester dans QEMU »)
 ```
 
@@ -56,13 +53,13 @@ l'ISO produite apparaît directement sur l'hôte.
 sudo podman run --rm -it --privileged -v "$PWD":/work -w /work debian:trixie bash
 # --- dans le conteneur ---
 apt update && apt install -y live-build debootstrap
-./clean.sh && ./build.sh          # détecte root : pas de sudo nécessaire
+./clean.sh && ./build.sh
 exit
 ```
 
 L'ISO produite appartient à root (build rootful) : au besoin,
 `sudo chown $USER kiddux-amd64.hybrid.iso`. Puis, de retour sur
-l'hôte, tester avec QEMU (`./run-qemu.sh --uefi`). Ne lance pas `./clean.sh`
+l'hôte, tester avec QEMU (`./run-qemu.sh --uefi`). Ne pas lancer `./clean.sh`
 entre le build et le test : `lb clean` supprime les artefacts, **ISO comprise**.
 
 Résultat : `kiddux-amd64.hybrid.iso`. Au démarrage du live, XFCE
@@ -80,12 +77,12 @@ Le son n'est pas émulé par défaut ; le script ajoute une carte Intel HDA reli
 ./run-qemu.sh --uefi --installed   # démarre ensuite le système installé (sans CD)
 ```
 
-**Tester le système installé :** installe avec `--uefi --install`, puis
-ferme la VM une fois Calamares terminé et lance `--uefi --installed`. En UEFI,
+**Tester le système installé :** installer avec `--uefi --install`, puis
+fermer la VM une fois Calamares terminé et lancer `--uefi --installed`. En UEFI,
 l'installateur enregistre l'entrée de démarrage dans la mémoire NVRAM du
 firmware ; le script la garde dans `kids-test-ovmf-vars.fd` (réinitialisée à
 chaque nouvelle `--install`). Sans elle, OVMF ne sait pas amorcer le disque et
-GRUB tombe sur son invite de commande (`grub>`). Utilise les mêmes options
+GRUB tombe sur son invite de commande (`grub>`). Utiliser les mêmes options
 (`--uefi` ou non) pour l'installation et pour le démarrage.
 
 Par défaut QEMU amorce en BIOS (menu isolinux). Pour voir le menu **GRUB**
